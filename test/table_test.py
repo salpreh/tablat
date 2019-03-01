@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 sys.path.insert(0, '../tablat')
-from Table import Table
+from tablat import Table
 from pathlib import Path
 
 # Global vars

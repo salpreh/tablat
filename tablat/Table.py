@@ -55,7 +55,7 @@ class Table(object):
         self._print_hsep()
 
         # Print headers
-        headers_line = '|{s}{d:<{l}}{s}'.format(d=self.headers[1], l=self._column_max[0], s=col_space)
+        headers_line = '|{s}{d:<{l}}{s}'.format(d=self.headers[0], l=self._column_max[0], s=col_space)
         for (col_lenght, header) in zip(self._column_max[1:], self.headers[1:]):
             headers_line += '{d:>{l}}{s}'.format(l=col_lenght, d=header, s=col_space)
 
