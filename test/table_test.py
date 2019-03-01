@@ -8,7 +8,7 @@ from pathlib import Path
 test_path = Path("../")
 
 if __name__ == "__main__":
-    header = ['FILE_NAME', 'FOLDER', 'NUM_CONTENT']
+    header = ['FILE_NAME', 'FOLDER', 'FILES_IN']
     data = []
     for file_path in test_path.iterdir():
         data.append(file_path.name)

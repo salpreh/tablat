@@ -15,9 +15,9 @@ class Table(object):
     def __init__(self, table_data=[], headers=[]):
         self._table_data = table_data
         self.headers = list(map(str, headers))
+        self._num_columns = len(headers)
         self._column_max = self._update_columns_maxlenght()
         self._colspace = 3
-        self._num_columns = len(headers)
 
     def __getitem__(self, i):
             return self._table_data[i * self._num_columns:i * self._num_columns + self._num_columns]
@@ -36,11 +36,11 @@ class Table(object):
 
         self._column_max = column_max
 
-    def _print_hsep(self, char='_'):
+    def _print_hsep(self, char='_', borders=' '):
         """
         Print horizontal separator
         """
-        print(' ' + char*(sum(self._column_max) + (self._num_columns + 1) * self._colspace))
+        print('{b}{l}{b}'.format(b=borders, l=char*(sum(self._column_max) + (self._num_columns + 1) * self._colspace)))
 
     def print_table(self):
         """
@@ -61,7 +61,7 @@ class Table(object):
 
         headers_line += '|'
         print(headers_line)
-        self._print_hsep('-')
+        self._print_hsep('-', '|')
 
         # Print lines
         for i, data in enumerate(self._table_data):
@@ -75,4 +75,4 @@ class Table(object):
                 data_line += '|'
                 print(data_line)
 
-        self._print_hsep()
+        self._print_hsep(borders='|')
