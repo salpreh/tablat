@@ -29,9 +29,8 @@ my_table.print_table()
 ```
 
 ##### Output
-.. raw:: html
 
-   <img src="assets/tablat_out.png" alt="output" />
+![table_output](https://github.com/salpreh/tablat/edit/master/assets/tablat_output.png)
 
 ##### Notes
 You can retrieve data form the table using indices
@@ -41,4 +40,3 @@ my_table[0]
 
 # Get third row, second column
 my_table[2][1]
-```
