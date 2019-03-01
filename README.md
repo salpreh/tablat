@@ -29,8 +29,7 @@ my_table.print_table()
 ```
 
 ##### Output
-
-![table_output](https://github.com/salpreh/tablat/edit/master/assets/tablat_output.png)
+<img src="/assets/tablat_output.png" alt="table_output">
 
 ##### Notes
 You can retrieve data form the table using indices
