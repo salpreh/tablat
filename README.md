@@ -3,13 +3,23 @@
 A simple way to print output in a table
 
 ### Basic usage
-Just create a `Table` objecta and pass it a headers list and the data. The number of columns will be calculated from the number of headers.
+Just create a `Table` object and give it a headers list and the data. The number of columns will be calculated from the number of headers.
+
+### Installation
+You can intall the package using [pip](https://pip.pypa.io/en/stable/) (Python Package Installer)
+```sh
+pip install tablat
+```
+or
+```sh
+python -m pip install tablat
+```
 
 ### Code sample
 
-##### Code
+#### Code
 ```py
-from pathli import Path
+from pathlib import Path
 from tablat import Table
 
 folder_path = Path('./')
@@ -28,14 +38,16 @@ my_table = Table(data, header)
 my_table.print_table()
 ```
 
-##### Output
+#### Output
 <img src="/assets/tablat_output.png" alt="table_output">
 
-##### Notes
+#### Notes
 You can retrieve data form the table using indices
+
 ```py
 # Get first row data
 my_table[0]
 
 # Get third row, second column
 my_table[2][1]
+```
