@@ -1,1 +1,1 @@
-from Table import Table
+from tablat.Table import Table
