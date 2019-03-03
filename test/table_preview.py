@@ -1,13 +1,19 @@
 # -*- coding: utf-8 -*-
+import importlib.util
 import sys
-sys.path.insert(0, '../tablat')
-from tablat import Table
 from pathlib import Path
 
 # Global vars
 test_path = Path("../")
 
 if __name__ == "__main__":
+
+    # Import file under test
+    spec = importlib.util.spec_from_file_location("tablat", "../tablat/Table.py")
+    target = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(target)
+    Table = target.Table
+
     header = ['FILE_NAME', 'FOLDER', 'FILES_IN']
     data = []
     for file_path in test_path.iterdir():

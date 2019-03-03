@@ -1,0 +1,26 @@
+{
+    "test_table_init": {
+      "num_columns": 4,
+      "columns_max": [11, 9, 13, 18]
+    },
+
+    "test_headers_update": {
+      "num_columns": 2,
+      "columns_max": [13, 18]
+    },
+
+    "test_data_update": {
+      "num_columns": 4,
+      "columns_max": [18, 13, 7, 11]
+    },
+
+    "test_data_addition": {
+      "num_columns": 4,
+      "columns_max": [18, 9, 19, 18]
+    },
+
+    "test_getitem": {
+      "first_row": ["Andorra", 3040051, "les Escaldes", "Escaldes-Engordany"],
+      "third_row_second_col": 1133574
+    }
+}
