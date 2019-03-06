@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import warnings
+from .TabStyle import TabStyle
 
 
 class Table(object):
@@ -13,14 +14,19 @@ class Table(object):
         table_data: An iterable containing the data to print in the table.
                     By default an empty list
         headers: Title of each column in the table. By default an empty list.
+        style (tablat.TabStyle): Style object to define the aspect of the table.
+            If style object is not provided, default style is applied.
+            (Default style in `tablat.TabStyle` doc)
     """
 
-    def __init__(self, table_data=[], headers=[]):
+    def __init__(self, table_data=[], headers=[], style=None):
         self._table_data = table_data
         self._headers = list(map(str, headers))
         self._num_columns = len(headers)
         self._colspace = 3
         self._calc_columns_max_lenght()
+        self.style = style
+        self._style_check()
 
     def __getitem__(self, i):
         return self._table_data[i * self._num_columns:i * self._num_columns + self._num_columns]
@@ -61,11 +67,22 @@ class Table(object):
             if len(str(data)) > self._column_max[i % self._num_columns]:
                 self._column_max[i % self._num_columns] = len(str(data))
 
+    def _style_check(self):
+        if not self.style or not isinstance(self.style, TabStyle):
+            self.style = TabStyle()
+
     def _print_hsep(self, char='_', borders=' '):
         """
         Print horizontal separator
         """
-        print('{b}{l}{b}'.format(b=borders, l=char*(sum(self._column_max) + (self._num_columns + 1) * self._colspace)))
+
+        add_lenght = self._colspace * 2
+        if self.style.col_separator:
+            add_lenght += (self._num_columns -1) * (round(self._colspace / 2) * 2 + 1)
+        else:
+            add_lenght += (self._num_columns - 1) * self._colspace
+
+        print('{b}{l}{b}'.format(b=borders, l=char*(sum(self._column_max) + add_lenght)))
 
     def print_table(self):
         """
@@ -78,34 +95,53 @@ class Table(object):
                           "Use headers attribute", UserWarning)
             return
 
-        # Print init
-        col_space = ' '*self._colspace
+        # Init style vars
+        self._style_check()
+        col_space = ' ' * self._colspace
+        h_borders = ''
+        if self.style.col_separator:
+            col_space = '{s}{sep}{s}'.format(s=' '*round(self._colspace / 2), sep='|')
+
+        if self.style.borders:
+            h_borders = '|'
 
         # Print separator line
-        self._print_hsep()
+        if self.style.borders:
+            self._print_hsep()
+        else:
+            print()
 
         # Print headers
-        headers_line = '|{s}{d:<{l}}{s}'.format(d=self._headers[0], l=self._column_max[0], s=col_space)
-        for (col_lenght, header) in zip(self._column_max[1:], self._headers[1:]):
-            headers_line += '{d:>{l}}{s}'.format(l=col_lenght, d=header, s=col_space)
+        headers_line = '{b}{s}{d:<{l}}{sep}'.format(b=h_borders, s=' '*self._colspace, d=self._headers[0],
+                                                    l=self._column_max[0], sep=col_space)
 
-        headers_line += '|'
+        for (col_lenght, header) in zip(self._column_max[1:-1], self._headers[1:-1]):
+            headers_line += '{d:>{l}}{sep}'.format(l=col_lenght, d=header, sep=col_space)
+
+        headers_line += '{d:<{l}}{s}{b}'.format(b=h_borders, s=' '*self._colspace, d=self._headers[-1],
+                                                l=self._column_max[-1], sep=col_space)
+
         print(headers_line)
-        self._print_hsep('-', '|')
+        self._print_hsep('=' if self.style.row_separator else '-', h_borders)
 
         # Print lines
         for i, data in enumerate(self._table_data):
             if i % self._num_columns == 0:
-                data_line = '|{s}{d:<{l}}{s}'.format(d=data, l=self._column_max[i % self._num_columns], s=col_space)
+                data_line = '{b}{s}{d:<{l}}{sep}'.format(d=data, b=h_borders, s=' '*self._colspace,
+                                                         sep=col_space, l=self._column_max[i % self._num_columns])
+
+            elif i % self._num_columns < self._num_columns - 1:
+                data_line += '{d:>{l}}{sep}'.format(d=data, l=self._column_max[i % self._num_columns], sep=col_space)
 
             else:
-                data_line += '{d:>{l}}{s}'.format(d=data, l=self._column_max[i % self._num_columns], s=col_space)
-
-            if i % self._num_columns == self._num_columns - 1:
-                data_line += '|'
+                data_line += '{d:>{l}}{s}{b}'.format(d=data, l=self._column_max[i % self._num_columns],
+                                                     s=' '*self._colspace, b=h_borders)
                 print(data_line)
+                if self.style.row_separator:
+                    self._print_hsep('-', h_borders)
 
-        self._print_hsep(borders='|')
+        if self.style.borders:
+            self._print_hsep(borders='|')
 
     def add_data(self, data):
         """
