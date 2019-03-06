@@ -10,3 +10,7 @@ dist/
 
 # Test venv
 venv/
+
+# Development
+doc/dev-doc/
+setup/
