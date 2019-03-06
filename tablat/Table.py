@@ -90,7 +90,7 @@ class Table(object):
         """
 
         add_lenght = self._colspace * 2
-        if self.style.col_separator:
+        if self.style.col_sep:
             add_lenght += (self._num_columns -1) * (round(self._colspace / 2) * 2 + 1)
         else:
             add_lenght += (self._num_columns - 1) * self._colspace
@@ -112,7 +112,7 @@ class Table(object):
         self._style_check()
         col_space = ' ' * self._colspace
         h_borders = ''
-        if self.style.col_separator:
+        if self.style.col_sep:
             col_space = '{s}{sep}{s}'.format(s=' '*round(self._colspace / 2), sep='|')
 
         if self.style.borders:
@@ -135,7 +135,7 @@ class Table(object):
                                                 l=self._column_max[-1], sep=col_space)
 
         print(headers_line)
-        self._print_hsep('=' if self.style.row_separator else '-', h_borders)
+        self._print_hsep('=' if self.style.row_sep else '-', h_borders)
 
         # Print lines
         for i, data in enumerate(self._table_data):
@@ -150,7 +150,7 @@ class Table(object):
                 data_line += '{d:>{l}}{s}{b}'.format(d=data, l=self._column_max[i % self._num_columns],
                                                      s=' '*self._colspace, b=h_borders)
                 print(data_line)
-                if self.style.row_separator:
+                if self.style.row_sep:
                     self._print_hsep('-', h_borders)
 
         if self.style.borders:

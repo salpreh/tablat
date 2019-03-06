@@ -47,23 +47,23 @@ class TabStyle(object):
         self._borders = bool(borders)
 
     @property
-    def row_separator(self):
+    def row_sep(self):
         """
         Define if a line is printed to separate the data of each column
         """
         return self._row_sep
 
-    @row_separator.setter
-    def row_separator(self, row_sep):
+    @row_sep.setter
+    def row_sep(self, row_sep):
         self._row_sep = bool(row_sep)
 
     @property
-    def col_separator(self):
+    def col_sep(self):
         """
         Define if a line is printed to separate each row of the table
         """
         return self._col_sep
 
-    @col_separator.setter
-    def col_separator(self, col_sep):
+    @col_sep.setter
+    def col_sep(self, col_sep):
         self._col_sep = bool(col_sep)

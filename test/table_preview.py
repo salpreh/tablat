@@ -16,16 +16,16 @@ def create_test_tab():
     Creates a basic table for test purposes
     """
     header = ['FILE_NAME', 'FOLDER', 'FILES_IN']
-    data = []
+    my_table = Table(headers=header)
     for file_path in test_path.iterdir():
-        data.append(file_path.name)
+        my_table.add_data([file_path.name])
         if file_path.is_dir():
-            data.extend(['YES', len([f for f in file_path.iterdir()])])
+            my_table.add_data(['YES', len([f for f in file_path.iterdir()])])
 
         else:
-            data.extend(['NO', 0])
+            my_table.add_data(['NO', 0])
 
-    return Table(data, header)
+    return my_table
 
 
 def print_all_style_tabs(table):
