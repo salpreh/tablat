@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import warnings
+import sys
+from io import StringIO
 from .TabStyle import TabStyle
 
 
@@ -32,7 +34,18 @@ class Table(object):
         return self._table_data[i * self._num_columns:i * self._num_columns + self._num_columns]
 
     def __str__(self):
+
+        # Modify stdout for str buffer
+        stdout_backup = sys.stdout
+        sys.stdout = StringIO()
+
+        # Generate table (printed to stdout) and restore stdout
         self.print_table()
+        table_str = sys.stdout.getvalue()
+        sys.stdout.close()
+        sys.stdout = stdout_backup
+
+        return table_str
 
     def __repr__(self):
         print('{\n\t"headers":{},\n\t"data":{},\n\n"columns_lenght":{}\n}'.format(self.headers,
