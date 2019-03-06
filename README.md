@@ -1,12 +1,13 @@
 # tablat
----
+
 
 [![PyPI version](https://badge.fury.io/py/tablat.svg)](https://badge.fury.io/py/tablat)
 [![PyPI version](https://img.shields.io/github/license/salpreh/tablat.svg)](https://img.shields.io/github/license/salpreh/tablat.svg)
 
 **A simple way to print output in a table**
 
-### Basic usage
+---
+## Basic usage
 Just create a `Table` object and give it a headers list and the data. The number of columns will be calculated from the number of headers.
 
 #### Code sample
@@ -35,7 +36,7 @@ my_table.print_table()
 <img src="https://raw.githubusercontent.com/salpreh/tablat/master/assets/tablat_output.png" alt="table_output">
 
 
-### Installation
+## Installation
 You can intall the package using [pip](https://pip.pypa.io/en/stable/) (Python Package Installer)
 ```sh
 pip install tablat
@@ -45,9 +46,9 @@ or
 python -m pip install tablat
 ```
 
-### Usage
+## Usage
 
-#### Creating and modifying `Table`
+### Creating and modifying `Table`
 
 `Table` object can be initialized with the data or empty:
 ```py
@@ -65,7 +66,7 @@ for file_path in Path('./').iterdir():
   my_table.add_data([file_path.name, file_path.is_dir()])
 ```
 
-#### Syling the table with `TabStyle`
+### Syling the table with `TabStyle`
 
 `TabStyle` class is used to encapsulate style options for the table. Current values are:
 
@@ -105,7 +106,7 @@ my_table.syle.borders = False
 my_table.style.update(col_sep=True, row_sep=True)
 ```
 
-#### Sample table with style modifications
+### Sample table with style modifications
 <img src="https://raw.githubusercontent.com/salpreh/tablat/master/assets/full_tab.png" alt="table with borders and separators">
 <img src="https://raw.githubusercontent.com/salpreh/tablat/master/assets/col_sep.png" alt="table with row separators">
 
@@ -113,7 +114,7 @@ my_table.style.update(col_sep=True, row_sep=True)
 <img src="https://raw.githubusercontent.com/salpreh/tablat/master/assets/clean_tab.png" alt="table with no borders nor separators">
 
 
-#### Additional Notes
+### Additional Notes
 You can retrieve data form the table using indices
 
 ```py
