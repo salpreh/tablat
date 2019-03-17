@@ -20,10 +20,10 @@ def create_test_tab():
     for file_path in test_path.iterdir():
         my_table.add_data([file_path.name])
         if file_path.is_dir():
-            my_table.add_data(['YES', len([f for f in file_path.iterdir()])])
+            my_table.add_data(['Y', len([f for f in file_path.iterdir()])])
 
         else:
-            my_table.add_data(['NO', 0])
+            my_table.add_data(['N', 0])
 
     return my_table
 
@@ -37,6 +37,7 @@ def print_all_style_tabs(table):
     for (borders, col_sep, row_sep) in set(itertools.combinations(bool_opt * 3, 3)):
         print(f'> borders={borders} / col_separator={col_sep} / row_separator={row_sep}\n')
         my_table.style.update(borders, col_sep, row_sep)
+        my_table.set_column_align(1, '^')
         my_table.print_table()
         print('-'*60)
 

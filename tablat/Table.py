@@ -26,8 +26,13 @@ class Table(object):
         self._headers = list(map(str, headers))
         self._num_columns = len(headers)
         self._colspace = 3
-        self._calc_columns_max_lenght()
+        self._column_max = []
+        self._align_list = []
         self.style = style
+
+        # Init functions
+        self._calc_columns_max_lenght()
+        self._alignment_init()
         self._style_check()
 
     def __getitem__(self, i):
@@ -84,6 +89,30 @@ class Table(object):
         if not self.style or not isinstance(self.style, TabStyle):
             self.style = TabStyle()
 
+    def _alignment_init(self):
+        """
+        Initialize default alingnment based on current number of columns
+        """
+        align_list = []
+        if self._num_columns > 0:
+            align_list.append('<')
+            for i in range(1, self._num_columns):
+                align_list.append('>')
+
+        self._align_list = align_list
+
+    def _adjust_alignment(self):
+        """
+        Correct alignment list based on `aling_list` lenght and the current number
+            of columns
+        """
+        col_diff = self._num_columns - len(self._align_list)
+        if col_diff <= 0:
+            self._align_list = self._align_list[:self._num_columns]
+
+        else:
+            self._align_list.extend(['>'] * col_diff)
+
     def _print_hsep(self, char='_', borders=' '):
         """
         Print horizontal separator
@@ -125,30 +154,33 @@ class Table(object):
             print()
 
         # Print headers
-        headers_line = '{b}{s}{d:<{l}}{sep}'.format(b=h_borders, s=' '*self._colspace, d=self._headers[0],
-                                                    l=self._column_max[0], sep=col_space)
+        headers_line = '{b}{s}{d:{al}{l}}{sep}'.format(b=h_borders, s=' '*self._colspace, d=self._headers[0],
+                                                    al=self._align_list[0], l=self._column_max[0], sep=col_space)
 
-        for (col_lenght, header) in zip(self._column_max[1:-1], self._headers[1:-1]):
-            headers_line += '{d:>{l}}{sep}'.format(l=col_lenght, d=header, sep=col_space)
+        for (col_lenght, header, align) in zip(self._column_max[1:-1], self._headers[1:-1], self._align_list[1:-1]):
+            headers_line += '{d:{al}{l}}{sep}'.format(l=col_lenght, al=align, d=header, sep=col_space)
 
-        headers_line += '{d:<{l}}{s}{b}'.format(b=h_borders, s=' '*self._colspace, d=self._headers[-1],
-                                                l=self._column_max[-1], sep=col_space)
+        headers_line += '{d:{al}{l}}{s}{b}'.format(b=h_borders, s=' '*self._colspace, d=self._headers[-1],
+                                                   al=self._align_list[-1], l=self._column_max[-1], sep=col_space)
 
         print(headers_line)
         self._print_hsep('=' if self.style.row_sep else '-', h_borders)
 
         # Print lines
         for i, data in enumerate(self._table_data):
-            if i % self._num_columns == 0:
-                data_line = '{b}{s}{d:<{l}}{sep}'.format(d=data, b=h_borders, s=' '*self._colspace,
-                                                         sep=col_space, l=self._column_max[i % self._num_columns])
+            column_index = i % self._num_columns
+            if column_index == 0:
+                data_line = '{b}{s}{d:{al}{l}}{sep}'.format(b=h_borders, s=' '*self._colspace,
+                                                            d=data, al=self._align_list[column_index],
+                                                            sep=col_space, l=self._column_max[column_index])
 
-            elif i % self._num_columns < self._num_columns - 1:
-                data_line += '{d:>{l}}{sep}'.format(d=data, l=self._column_max[i % self._num_columns], sep=col_space)
+            elif column_index < self._num_columns - 1:
+                data_line += '{d:{al}{l}}{sep}'.format(d=data, al=self._align_list[column_index],
+                                                       l=self._column_max[column_index], sep=col_space)
 
             else:
-                data_line += '{d:>{l}}{s}{b}'.format(d=data, l=self._column_max[i % self._num_columns],
-                                                     s=' '*self._colspace, b=h_borders)
+                data_line += '{d:{al}{l}}{s}{b}'.format(d=data, al=self._align_list[column_index],
+                                                        l=self._column_max[column_index], s=' '*self._colspace, b=h_borders)
                 print(data_line)
                 if self.style.row_sep:
                     self._print_hsep('-', h_borders)
@@ -179,6 +211,7 @@ class Table(object):
         self._headers = new_headers
         self._num_columns = len(new_headers)
         self._calc_columns_max_lenght()
+        self._adjust_alignment()
 
     @property
     def table_data(self):
@@ -191,3 +224,41 @@ class Table(object):
     def table_data(self, tab_data):
         self._table_data
         self._calc_columns_max_lenght()
+
+    @property
+    def alignment(self):
+        """
+        A copy of alignment list of the table. Following string `format` funciton encoding:
+            - `<`: Align column data to left.
+            - `>`: Align column data to right.
+            - `^`: Align column data to center.
+        """
+        return self._align_list[:]
+
+    @alignment.setter
+    def alignment(self, new_align):
+        try:
+            self._align_list = list(new_align)
+            self._adjust_alignment()
+
+        except TypeError:
+            print('Align value should be a list (or at least an iterable object)')
+
+    def set_column_align(self, num_column, column_align):
+        """
+        Set alignment mode for a specific column. Colummn numbering starts form 0.
+            Valid values for alignment are:
+
+            - `<`: Align column data to left.
+            - `>`: Align column data to right.
+            - `^`: Align column data to center.
+        """
+        valid_values = ['<', '^', '>']
+        if column_align not in valid_values:
+            raise ValueError('Invalid value. Valid values are {}.\n Chech method doc for more info'.format(valid_values))
+
+        try:
+            self._align_list[num_column] = column_align
+
+        except IndexError:
+            raise IndexError('Invalid column index. Current number of columns: {}, index input: {}'.format(self._num_columns, num_column))
