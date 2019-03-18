@@ -89,6 +89,56 @@ class Table(object):
         if not self.style or not isinstance(self.style, TabStyle):
             self.style = TabStyle()
 
+    def _get_column_mask(self, show_columns, hide_columns):
+        """
+        Return a boolean mask list. Each `bool` is associated with one column,
+            and indicates if that column must be displayed.
+        """
+        if show_columns:
+            base_value = False
+            mark_value = True
+            col_list = show_columns
+
+        else:
+            base_value = True
+            mark_value = False
+            col_list = hide_columns
+
+        mask_list = [base_value] * self._num_columns
+        for col_ind in col_list:
+            try:
+                mask_list[col_ind] = mark_value
+
+            except IndexError:
+                pass
+
+        return mask_list
+
+    def _filter_list(self, list, mask):
+        """
+        Return a filtered list based on a `bool` mask
+        """
+        if len(list) != len(mask):
+            print('Unable to filter list. Returning all data')
+            return list[:]
+
+        return [d for d, m in zip(list, mask) if m]
+
+    def _filter_table_data(self, mask):
+        """
+        """
+        row_lenght = self._num_columns
+        start = 0
+        end = row_lenght
+        filt_data = []
+
+        while end < len(self._table_data):
+            filt_data.extend(self._filter_list(self._table_data[start:end], mask))
+            start = end
+            end += row_lenght
+
+        return filt_data
+
     def _alignment_init(self):
         """
         Initialize default alingnment based on current number of columns
@@ -113,22 +163,30 @@ class Table(object):
         else:
             self._align_list.extend(['>'] * col_diff)
 
-    def _print_hsep(self, char='_', borders=' '):
+    def _print_hsep(self, char='_', borders=' ', num_columns=None, column_max=None):
         """
         Print horizontal separator
         """
 
+        num_columns = self._num_columns if not num_columns else num_columns
+        column_max = self._column_max if not column_max else column_max
         add_lenght = self._colspace * 2
         if self.style.col_sep:
-            add_lenght += (self._num_columns -1) * (round(self._colspace / 2) * 2 + 1)
+            add_lenght += (num_columns -1) * (round(self._colspace / 2) * 2 + 1)
         else:
-            add_lenght += (self._num_columns - 1) * self._colspace
+            add_lenght += (num_columns - 1) * self._colspace
 
-        print('{b}{l}{b}'.format(b=borders, l=char*(sum(self._column_max) + add_lenght)))
+        print('{b}{l}{b}'.format(b=borders, l=char*(sum(column_max) + add_lenght)))
 
-    def print_table(self):
+    def print_table(self, show_columns=[], hide_columns=[]):
         """
         Prints a table with the data.
+
+        Args:
+            show_columns (list): Indexes of the columns to show. This list
+                have priority over `hide_columns`.
+            hide_columns (list): Incexes of the columns to hide when printing.
+                If `show_columns` list is provided this list is ignored.
         """
 
         if not self._num_columns:
@@ -147,46 +205,54 @@ class Table(object):
         if self.style.borders:
             h_borders = '|'
 
+        # Check columns to show
+        mask = self._get_column_mask(show_columns, hide_columns)
+        align_list = self._filter_list(self._align_list, mask)
+        headers = self._filter_list(self._headers, mask)
+        num_columns = len(headers)
+        column_max = self._filter_list(self._column_max, mask)
+        table_data = self._filter_table_data(mask)
+
         # Print separator line
         if self.style.borders:
-            self._print_hsep()
+            self._print_hsep(num_columns=num_columns, column_max=column_max)
         else:
             print()
 
         # Print headers
-        headers_line = '{b}{s}{d:{al}{l}}{sep}'.format(b=h_borders, s=' '*self._colspace, d=self._headers[0],
-                                                    al=self._align_list[0], l=self._column_max[0], sep=col_space)
+        headers_line = '{b}{s}{d:{al}{l}}{sep}'.format(b=h_borders, s=' '*self._colspace, d=headers[0],
+                                                    al=align_list[0], l=column_max[0], sep=col_space)
 
-        for (col_lenght, header, align) in zip(self._column_max[1:-1], self._headers[1:-1], self._align_list[1:-1]):
+        for (col_lenght, header, align) in zip(column_max[1:-1], headers[1:-1], align_list[1:-1]):
             headers_line += '{d:{al}{l}}{sep}'.format(l=col_lenght, al=align, d=header, sep=col_space)
 
-        headers_line += '{d:{al}{l}}{s}{b}'.format(b=h_borders, s=' '*self._colspace, d=self._headers[-1],
-                                                   al=self._align_list[-1], l=self._column_max[-1], sep=col_space)
+        headers_line += '{d:{al}{l}}{s}{b}'.format(b=h_borders, s=' '*self._colspace, d=headers[-1],
+                                                   al=align_list[-1], l=column_max[-1], sep=col_space)
 
         print(headers_line)
-        self._print_hsep('=' if self.style.row_sep else '-', h_borders)
+        self._print_hsep('=' if self.style.row_sep else '-', h_borders, num_columns, column_max)
 
         # Print lines
-        for i, data in enumerate(self._table_data):
-            column_index = i % self._num_columns
+        for i, data in enumerate(table_data):
+            column_index = i % num_columns
             if column_index == 0:
                 data_line = '{b}{s}{d:{al}{l}}{sep}'.format(b=h_borders, s=' '*self._colspace,
-                                                            d=data, al=self._align_list[column_index],
-                                                            sep=col_space, l=self._column_max[column_index])
+                                                            d=data, al=align_list[column_index],
+                                                            sep=col_space, l=column_max[column_index])
 
-            elif column_index < self._num_columns - 1:
-                data_line += '{d:{al}{l}}{sep}'.format(d=data, al=self._align_list[column_index],
-                                                       l=self._column_max[column_index], sep=col_space)
+            elif column_index < num_columns - 1:
+                data_line += '{d:{al}{l}}{sep}'.format(d=data, al=align_list[column_index],
+                                                       l=column_max[column_index], sep=col_space)
 
             else:
-                data_line += '{d:{al}{l}}{s}{b}'.format(d=data, al=self._align_list[column_index],
-                                                        l=self._column_max[column_index], s=' '*self._colspace, b=h_borders)
+                data_line += '{d:{al}{l}}{s}{b}'.format(d=data, al=align_list[column_index],
+                                                        l=column_max[column_index], s=' '*self._colspace, b=h_borders)
                 print(data_line)
                 if self.style.row_sep:
-                    self._print_hsep('-', h_borders)
+                    self._print_hsep('-', h_borders, num_columns, column_max)
 
         if self.style.borders:
-            self._print_hsep(borders='|')
+            self._print_hsep(borders='|', num_columns=num_columns, column_max=column_max)
 
     def add_data(self, data):
         """
