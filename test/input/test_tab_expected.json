@@ -22,5 +22,29 @@
     "test_getitem": {
       "first_row": ["Andorra", 3040051, "les Escaldes", "Escaldes-Engordany"],
       "third_row_second_col": 1133574
+    },
+
+    "test_table_content_init": {
+      "0": ["Andorra", 3040051, "les Escaldes", "Escaldes-Engordany"],
+      "1": ["Afghanistan", 1120985, "Zaranj", "Nīmrūz"],
+      "8": ["Angola", 3347939, "Lobito", "Benguela"],
+      "12": ["Argentina", 3435038, "Dolores", "Buenos Aires"],
+      "13": ["Argentina", 3832647, "Villa Regina", "Rio Negro"]
+    },
+
+    "test_table_content_add": {
+      "0": ["Andorra", 3040051, "les Escaldes", "Escaldes-Engordany"],
+      "1": ["Afghanistan", 1120985, "Zaranj", "Nīmrūz"],
+      "8": ["Angola", 3347939, "Lobito", "Benguela"],
+      "13": ["Argentina", 3832647, "Villa Regina", "Rio Negro"],
+      "14": ["New Heaven", 0, "Resistance", "Earth"]
+    },
+
+    "test_table_content_filter": {
+      "0": ["Andorra", 3040051, "les Escaldes", "Escaldes-Engordany"],
+      "1": ["Afghanistan", 1120985, "Zaranj", "Nīmrūz"],
+      "8": ["Angola", 3347939, "Lobito", "Benguela"],
+      "12": ["Argentina", 3435038, "Dolores", "Buenos Aires"],
+      "13": ["Argentina", 3832647, "Villa Regina", "Rio Negro"]
     }
 }
