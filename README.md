@@ -66,6 +66,38 @@ for file_path in Path('./').iterdir():
   my_table.add_data([file_path.name, file_path.is_dir()])
 ```
 
+### Modifying column alignment
+By default first column will be aligned to left and the rest to right. The alignment
+follows the same encoding as the string `format` function, a character can be passed to set the alignment:
+
+- Right align: `>`
+- Left align: `<`
+- Center align: `^`
+
+Column alignment can be changed with `alignment` attribute or `set_column_align()` method.
+
+With `alignment` attribute you can provide a list with the alignment for each column:
+```py
+my_table.alignment = ['^', '^', '>']
+```
+
+With `set_column_align(index, align_char)` you can change a specific column alignment (_column index starts form 0)_:
+```py
+my_table.set_column_align(0, '<')
+```
+
+### Filtering columns to print
+By default `print_table()` will print all columns in the table, but you can filter what columns should be printed.
+
+`print_table()` have two optional arguments: `show_columns` and `hide_columns`. This arguments expects a list with the indexes of the columns to print or hide respectively. If the two arguments are used `hide_columns` will be ignored.
+```py
+# Shows first and third column
+my_table.print_table(show_columns=[0, 2])
+
+# Hide third column and shows the rest
+my_table.print_table(hide_columns=[2])
+```
+
 ### Syling the table with `TabStyle`
 
 `TabStyle` class is used to encapsulate style options for the table. Current values are:
