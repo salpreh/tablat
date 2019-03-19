@@ -132,7 +132,7 @@ class Table(object):
         end = row_lenght
         filt_data = []
 
-        while end < len(self._table_data):
+        while end <= len(self._table_data):
             filt_data.extend(self._filter_list(self._table_data[start:end], mask))
             start = end
             end += row_lenght
