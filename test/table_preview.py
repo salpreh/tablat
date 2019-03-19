@@ -35,16 +35,56 @@ def print_all_style_tabs(table):
     bool_opt = [True, False]
     print('>> Printing style table combinations...')
     for (borders, col_sep, row_sep) in set(itertools.combinations(bool_opt * 3, 3)):
-        print(f'> borders={borders} / col_separator={col_sep} / row_separator={row_sep}\n')
         my_table.style.update(borders, col_sep, row_sep)
-        my_table.set_column_align(1, '^')
-        my_table.print_table()
-        print('-'*60)
+        print_table_debug(
+            f'> borders={borders} / col_separator={col_sep} / row_separator={row_sep}\n',
+            table
+        )
+
+
+def print_align_test(table):
+
+    # Change alignment list
+    table.alignment = ['^', '<', '>']
+    print_table_debug(f'Alignment changed to: {table.alignment}\n', table)
+
+    # Update specific columns
+    table.set_column_align(1, '^')
+    table.set_column_align(0, '<')
+    print_table_debug(
+        f"Alignment changed. Column 1 -> '{table.alignment[0]}' / Column 2 -> '{table.alignment[1]}'",
+        table
+    )
+
+
+def print_filter_test(table):
+    # Hide columns
+    print(f'Hide column 2\n')
+    table.print_table(hide_columns=[1])
+    print('-'*60)
+
+    # Show columns
+    print(f'Show columns 1 an 2\n')
+    table.print_table(show_columns=[0, 1])
+    print('-'*60)
+
+    # Show and hide
+    print(f'Show column 1, hide 1 and 3\n')
+    table.print_table(show_columns=[0], hide_columns=[0, 2])
+    print('-'*60)
+
+
+def print_table_debug(title, table):
+    print(title+'\n')
+    table.print_table()
+    print('-'*60)
 
 
 if __name__ == "__main__":
     my_table = create_test_tab()
     print_all_style_tabs(my_table)
+    print_align_test(my_table)
+    print_filter_test(my_table)
 
     # getitem test
     print(f'\n1st Row: {my_table[0]}')
