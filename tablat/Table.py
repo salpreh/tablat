@@ -220,14 +220,19 @@ class Table(object):
             print()
 
         # Print headers
-        headers_line = '{b}{s}{d:{al}{l}}{sep}'.format(b=h_borders, s=' '*self._colspace, d=headers[0],
-                                                    al=align_list[0], l=column_max[0], sep=col_space)
+        if num_columns == 1:
+            headers_line = '{b}{s}{d:{al}{l}}{s}{b}'.format(b=h_borders, s=' '*self._colspace, d=headers[0],
+                                                            al=align_list[0], l=column_max[0])
 
-        for (col_lenght, header, align) in zip(column_max[1:-1], headers[1:-1], align_list[1:-1]):
-            headers_line += '{d:{al}{l}}{sep}'.format(l=col_lenght, al=align, d=header, sep=col_space)
+        else:
+            headers_line = '{b}{s}{d:{al}{l}}{sep}'.format(b=h_borders, s=' '*self._colspace, d=headers[0],
+                                                           al=align_list[0], l=column_max[0], sep=col_space)
 
-        headers_line += '{d:{al}{l}}{s}{b}'.format(b=h_borders, s=' '*self._colspace, d=headers[-1],
-                                                   al=align_list[-1], l=column_max[-1], sep=col_space)
+            for (col_lenght, header, align) in zip(column_max[1:-1], headers[1:-1], align_list[1:-1]):
+                headers_line += '{d:{al}{l}}{sep}'.format(l=col_lenght, al=align, d=header, sep=col_space)
+
+            headers_line += '{d:{al}{l}}{s}{b}'.format(b=h_borders, s=' '*self._colspace, d=headers[-1],
+                                                       al=align_list[-1], l=column_max[-1], sep=col_space)
 
         print(headers_line)
         self._print_hsep('=' if self.style.row_sep else '-', h_borders, num_columns, column_max)
@@ -235,7 +240,16 @@ class Table(object):
         # Print lines
         for i, data in enumerate(table_data):
             column_index = i % num_columns
-            if column_index == 0:
+            row_completed = False
+
+            # Generate table rows
+            if num_columns == 1:
+                data_line = data_line = '{b}{s}{d:{al}{l}}{s}{b}'.format(b=h_borders, s=' '*self._colspace,
+                                                                         d=data, al=align_list[column_index],
+                                                                         l=column_max[column_index])
+                row_completed = True
+
+            elif column_index == 0:
                 data_line = '{b}{s}{d:{al}{l}}{sep}'.format(b=h_borders, s=' '*self._colspace,
                                                             d=data, al=align_list[column_index],
                                                             sep=col_space, l=column_max[column_index])
@@ -247,6 +261,10 @@ class Table(object):
             else:
                 data_line += '{d:{al}{l}}{s}{b}'.format(d=data, al=align_list[column_index],
                                                         l=column_max[column_index], s=' '*self._colspace, b=h_borders)
+                row_completed = True
+
+            # Manage end of row
+            if row_completed:
                 print(data_line)
                 if self.style.row_sep:
                     self._print_hsep('-', h_borders, num_columns, column_max)
