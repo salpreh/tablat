@@ -23,11 +23,10 @@ class Table(object):
             (Default style in `tablat.TabStyle` doc)
     """
 
-    def __init__(self, table_data=[], headers=[], style=None):
-        print(table_data)
-        self._table_data = table_data
-        self._headers = list(map(str, headers))
-        self._num_columns = len(headers)
+    def __init__(self, table_data=None, headers=None, style=None):
+        self._table_data = table_data or []
+        self._headers = list(map(str, headers)) if headers else []
+        self._num_columns = len(self._headers)
         self._colspace = 3
         self._column_max = []
         self._align_list = []
@@ -105,7 +104,7 @@ class Table(object):
         else:
             base_value = True
             mark_value = False
-            col_list = hide_columns
+            col_list = hide_columns or []
 
         mask_list = [base_value] * self._num_columns
         for col_ind in col_list:
@@ -157,7 +156,7 @@ class Table(object):
 
     def _adjust_alignment(self):
         """
-        Correct alignment list based on `aling_list` lenght and the current number
+        Correct alignment list based on `align_list` lenght and the current number
             of columns
         """
         col_diff = self._num_columns - len(self._align_list)
@@ -182,7 +181,7 @@ class Table(object):
 
         print('{b}{l}{b}'.format(b=borders, l=char*(sum(column_max) + add_lenght)))
 
-    def print_table(self, show_columns=[], hide_columns=[]):
+    def print_table(self, show_columns=None, hide_columns=None):
         """
         Prints a table with the data.
 
@@ -342,10 +341,15 @@ class Table(object):
 
     @headers.setter
     def headers(self, new_headers):
+        init_align = not bool(self._headers)
         self._headers = new_headers
         self._num_columns = len(new_headers)
+
         self._calc_columns_max_lenght()
-        self._adjust_alignment()
+        if init_align:
+            self._alignment_init()
+        else:
+            self._adjust_alignment()
 
     @property
     def table_data(self):
