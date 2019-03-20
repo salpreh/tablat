@@ -35,7 +35,7 @@ my_table.print_table()
 #### Output
 <img src="https://raw.githubusercontent.com/salpreh/tablat/master/assets/tablat_output.png" alt="table_output">
 
-
+---
 ## Installation
 You can intall the package using [pip](https://pip.pypa.io/en/stable/) (Python Package Installer)
 ```sh
@@ -46,6 +46,7 @@ or
 python -m pip install tablat
 ```
 
+---
 ## Usage
 
 ### Creating and modifying `Table`
@@ -64,6 +65,56 @@ Table data can be expanded anytime:
 ```py
 for file_path in Path('./').iterdir():
   my_table.add_data([file_path.name, file_path.is_dir()])
+```
+
+#### Loading `Table` data by column
+
+You can use the method `set_column_content(column_dict)` to init the `Table` by columns.
+This method expects a `dict` with the column names as **keys** and a list with the column data as **values**.
+
+```json
+{
+  "column_name1": ["item11", "item12", "item13"],
+  "column_name2": ["item21", "item21", "item23"],
+  .
+  .
+  .
+}
+```
+
+Here is the example from the begining modified:
+```py
+from pathlib import Path
+from tablat import Table
+
+folder_path = Path('./')
+column_data = {
+    'FILE_NAME': [],
+    'FOLDER': [],
+    'FILES_IN': []
+}
+for file_path in test_path.iterdir():
+    column_data['FILE_NAME'].append(file_path.name)
+    column_data['FOLDER'].append('Y' if file_path.is_dir() else 'N')
+    column_data['FILES_IN'].append(len([f for f in file_path.iterdir()]) if file_path.is_dir() else 0)
+
+Table().set_column_content(column_data).print_table()
+```
+
+The method `get_column_conten()` returns a `dict` with the same structure even if you didn't initialized the table with `set_column_content(column_dict)`.
+
+#### Loading `Table` data from _json_
+
+The method `load_data(file_path)` initializes the table from a _json_ file. The _json_ file should
+have the same structure that `set_column_content(column_dict)`, column name as **key** and column content list as **value**:
+```json
+{
+  "column_name1": ["item11", "item12", "item13"],
+  "column_name2": ["item21", "item21", "item23"],
+  .
+  .
+  .
+}
 ```
 
 ### Modifying column alignment
@@ -98,6 +149,19 @@ my_table.print_table(show_columns=[0, 2])
 my_table.print_table(hide_columns=[2])
 ```
 
+### Additional Notes
+You can retrieve data form the table using indices
+
+```py
+# Get first row data
+my_table[0]
+
+# Get third row, second column
+my_table[2][1]
+```
+
+---
+## `Table` style
 ### Syling the table with `TabStyle`
 
 `TabStyle` class is used to encapsulate style options for the table. Current values are:
@@ -144,15 +208,3 @@ my_table.style.update(col_sep=True, row_sep=True)
 
 <img src="https://raw.githubusercontent.com/salpreh/tablat/master/assets/borders_cols.png" alt="table with borders and column separator">
 <img src="https://raw.githubusercontent.com/salpreh/tablat/master/assets/clean_tab.png" alt="table with no borders nor separators">
-
-
-### Additional Notes
-You can retrieve data form the table using indices
-
-```py
-# Get first row data
-my_table[0]
-
-# Get third row, second column
-my_table[2][1]
-```
