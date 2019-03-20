@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import warnings
 import sys
+import json
+from pathlib import Path
 from io import StringIO
 from .TabStyle import TabStyle
 
@@ -22,6 +24,7 @@ class Table(object):
     """
 
     def __init__(self, table_data=[], headers=[], style=None):
+        print(table_data)
         self._table_data = table_data
         self._headers = list(map(str, headers))
         self._num_columns = len(headers)
@@ -126,6 +129,7 @@ class Table(object):
 
     def _filter_table_data(self, mask):
         """
+        Return a list with the data correspondig to a certain columns based on a `bool` mask
         """
         row_lenght = self._num_columns
         start = 0
@@ -191,8 +195,8 @@ class Table(object):
 
         if not self._num_columns:
             warnings.warn("Unable to calculate the number of columns, you need"
-                          "to provide a 'headers' list to generate table layout."
-                          "Use headers attribute", UserWarning)
+                          "to provide a 'headers' list to generate the table "
+                          "layout. Use headers attribute", UserWarning)
             return
 
         # Init style vars
@@ -271,6 +275,52 @@ class Table(object):
 
         if self.style.borders:
             self._print_hsep(borders='|', num_columns=num_columns, column_max=column_max)
+
+    def set_content(self, data_dict):
+        """
+        Set the table content from a `dict`. The keys of the `dict` must be
+            the name of the columns, and the values a list with the content of that column:
+            `{'col_name1': [it11, it12, it13], 'col_name2: [it21, it22, it23]}`
+
+            Args:
+                data_dict (dict): A dictionary with the column names as keys
+                    and a list wiht column data as value.
+        """
+        self.headers = list(data_dict.keys())
+        self.table_data = []
+
+        # Check longest column
+        max_lenght = 0
+        for column_data in data_dict.values():
+            if len(column_data) > max_lenght:
+                max_lenght = len(column_data)
+
+        # Add data to table
+        for i in range(max_lenght):
+            row_data = []
+            for column_data in data_dict.values():
+                row_data.append(column_data[i] if i < len(column_data) else '')
+
+            self.add_data(row_data)
+
+    def load_data(self, file):
+        """
+        Set the table content from a `json` file. The `json` object must contain
+            keys corresponding to the name of the columns. The values associated to this
+            keys should be a list with the content of that column:
+            `{'col_name1': [it11, it12, it13], 'col_name2: [it21, it22, it23]}`
+
+            Args:
+                data_dict (str or pathlib.Path): The path to the `json` file in the system
+        """
+        file_path = Path(file)
+        if not file_path.exists():
+            raise IOError('File not found: {}'.format(file_path.resolve()))
+
+        with open(file_path, 'r') as f:
+            table_data = json.load(f)
+
+        self.set_content(table_data)
 
     def add_data(self, data):
         """
