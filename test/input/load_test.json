@@ -1,0 +1,6 @@
+{
+  "Name": ["John", "Miquel", "Gregor", "Karl", "Catalina", "Juliette"],
+  "Age": [33, 42, 39, 12, 30, 25],
+  "Country": ["EEUU", "France", "England", "Germany", "Russia", "Italy"],
+  "Infection level": ["12%", "0%", "68%", "6%", "22%", "0%"]
+}

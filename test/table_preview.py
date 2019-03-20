@@ -9,6 +9,7 @@ from pathlib import Path
 
 # Global vars
 test_path = Path("../")
+load_file_test = Path("./input/load_test.json")
 
 
 def create_test_tab():
@@ -26,6 +27,23 @@ def create_test_tab():
             my_table.add_data(['N', 0])
 
     return my_table
+
+
+def create_tab_columns():
+    """
+    Create table from a `dict` feeding data as columns
+    """
+    column_data = {
+        'FILE_NAME': [],
+        'FOLDER': [],
+        'FILES_IN': []
+    }
+    for file_path in test_path.iterdir():
+        column_data['FILE_NAME'].append(file_path.name)
+        column_data['FOLDER'].append('Y' if file_path.is_dir() else 'N')
+        column_data['FILES_IN'].append(len([f for f in file_path.iterdir()]) if file_path.is_dir() else 0)
+
+    Table().set_column_content(column_data).print_table()
 
 
 def print_all_style_tabs(table):
@@ -74,6 +92,12 @@ def print_filter_test(table):
     print('-'*60)
 
 
+def print_loaded_test():
+    table = Table()
+    table.load_data(load_file_test)
+    table.print_table()
+
+
 def print_table_debug(title, table):
     print(title+'\n')
     table.print_table()
@@ -85,6 +109,8 @@ if __name__ == "__main__":
     print_all_style_tabs(my_table)
     print_align_test(my_table)
     print_filter_test(my_table)
+    create_tab_columns()
+    print_loaded_test()
 
     # getitem test
     print(f'\n1st Row: {my_table[0]}')

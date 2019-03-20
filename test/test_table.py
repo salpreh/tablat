@@ -194,6 +194,45 @@ class TestTable(unittest.TestCase):
                 else:
                     self.assertTrue(str(exp_data) in table_lines[index])
 
+    def test_load_json(self):
+        """
+        Test internal variables and print output when loading a table from `json` file
+        """
+        expected_data = self.get_test_expected()['test_load_json']
+
+        # Init table from Json
+        json_path = self._input_folder / 'load_test.json'
+        table =Table().load_data(json_path)
+        table.style.update(True, False, False)
+
+        # Test internal parameters
+        self.assertEqual(table._num_columns, expected_data['num_columns'])
+        self.assertEqual(table._column_max, expected_data['columns_max'])
+
+        # Get printed table as str
+        table_str = str(table)
+        table_lines = table_str.split('\n')
+        table_lines = table_lines[3:]
+
+        # Check printed table content
+        num_rows = expected_data['num_rows']
+        for index in range(num_rows):
+            for column_content in expected_data['column_data'].values():
+                self.assertTrue(str(column_content[index]) in table_lines[index])
+
+    def test_get_column_dict(self):
+        """
+        Test `dict` with column data returned by `get_column_content()` method
+        """
+        expected_data = self.get_test_expected()['test_load_json']
+
+        # Init table from Json
+        json_path = self._input_folder / 'load_test.json'
+        table =Table().load_data(json_path)
+
+        tab_column_dict = table.get_column_content()
+        self.assertEqual(tab_column_dict, expected_data['column_data'])
+
     def preview(self):
         data_obj = self.get_data()
         table = Table(data_obj['data'], data_obj['headers'])
