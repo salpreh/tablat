@@ -275,7 +275,7 @@ class Table(object):
         if self.style.borders:
             self._print_hsep(borders='|', num_columns=num_columns, column_max=column_max)
 
-    def set_content(self, data_dict):
+    def set_column_content(self, data_dict):
         """
         Set the table content from a `dict`. The keys of the `dict` must be
             the name of the columns, and the values a list with the content of that column:
@@ -284,6 +284,9 @@ class Table(object):
             Args:
                 data_dict (dict): A dictionary with the column names as keys
                     and a list wiht column data as value.
+
+            Returns:
+                tablat.Table: Returns the Table (self).
         """
         self.headers = list(data_dict.keys())
         self.table_data = []
@@ -302,6 +305,32 @@ class Table(object):
 
             self.add_data(row_data)
 
+        return self
+
+    def get_column_content(self):
+        """
+        Returns a `dict` with the column names as keys and a list with the
+            column content as value:
+            `{'col_name1': [it11, it12, it13], 'col_name2: [it21, it22, it23]}`
+            _Note: If two column headers have the same title their data will
+                be collapsed into one key_
+
+        Returns:
+            dict: The table data ordered by columns.
+        """
+        if not self.headers:
+            return {}
+
+        column_dict = {}
+        for header in self.headers:
+            column_dict[header] = []
+
+        for i, data in enumerate(self.table_data):
+            col_index = i % self._num_columns
+            column_dict[self.headers[col_index]].append(data)
+
+        return column_dict
+
     def load_data(self, file):
         """
         Set the table content from a `json` file. The `json` object must contain
@@ -311,6 +340,9 @@ class Table(object):
 
             Args:
                 data_dict (str or pathlib.Path): The path to the `json` file in the system
+
+            Returns:
+                tablat.Table: Returns the Table (self)
         """
         file_path = Path(file)
         if not file_path.exists():
@@ -319,7 +351,7 @@ class Table(object):
         with open(file_path, 'r') as f:
             table_data = json.load(f)
 
-        self.set_content(table_data)
+        return self.set_column_content(table_data)
 
     def add_data(self, data):
         """
